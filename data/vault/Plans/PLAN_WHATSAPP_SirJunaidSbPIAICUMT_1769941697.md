@@ -1,0 +1,9 @@
+---
+original_task: WHATSAPP_SirJunaidSbPIAICUMT_1769941697.md
+status: active
+created: 2026-02-01T15:28:22.948465
+---
+# Plan
+1. Analyze email content.
+2. Draft reply (if needed).
+3. Update Odoo (if lead).

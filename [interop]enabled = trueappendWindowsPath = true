@@ -1,0 +1,7 @@
+
+
+[boot]
+systemd=true
+[interop]
+enabled = true
+appendWindowsPath = true

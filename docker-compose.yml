@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Main Python Watcher Agent
+  watcher:
+    build: .
+    container_name: panaversity_watcher
+    restart: unless-stopped
+    depends_on:
+      - whatsapp
+    volumes:
+      - ./data/vault:/app/data/vault
+      - ./linkedin_session:/app/linkedin_session
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WHATSAPP_BAILEYS_URL=http://whatsapp:3001/api
+    networks:
+      - panaverse
+
+  # WhatsApp Baileys Microservice (Node.js - No Browser!)
+  whatsapp:
+    build: ./skills/whatsapp_baileys
+    container_name: panaversity_whatsapp
+    restart: unless-stopped
+    volumes:
+      # Persist WhatsApp session for 24/7 operation
+      - ./whatsapp_baileys_session:/app/sessions
+    environment:
+      - NODE_ENV=production
+      - WHATSAPP_PORT=3001
+    ports:
+      - "3001:3001"
+    networks:
+      - panaverse
+
+networks:
+  panaverse:
+    driver: bridge

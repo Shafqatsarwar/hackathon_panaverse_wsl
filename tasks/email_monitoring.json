@@ -1,0 +1,38 @@
+{
+    "name": "email_monitoring",
+    "description": "Monitor Gmail inbox for Panaversity-related emails and send notifications",
+    "version": "1.0.0",
+    "schedule": "every 15 minutes",
+    "agents": [
+        "EmailAgent",
+        "NotificationAgent"
+    ],
+    "skills_required": [
+        "gmail_monitoring",
+        "email_filtering",
+        "email_notifications"
+    ],
+    "configuration": {
+        "keywords": [
+            "Panversity",
+            "PIAIC",
+            "Quiz",
+            "Assignment",
+            "Exam",
+            "Deadline"
+        ],
+        "check_interval_minutes": 15,
+        "max_emails_per_check": 10
+    },
+    "success_criteria": {
+        "emails_fetched": true,
+        "emails_filtered": true,
+        "notifications_sent": true,
+        "logged_to_history": true
+    },
+    "error_handling": {
+        "retry_on_failure": true,
+        "max_retries": 3,
+        "log_errors": true
+    }
+}

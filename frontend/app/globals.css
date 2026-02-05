@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+:root {
+  /* Cosmic Neon Palette - Vibrant & Bright */
+  --bg-dark: #050505;
+  --bg-card: rgba(20, 20, 25, 0.7);
+  --neon-blue: #2563eb;
+  /* Brighter Blue */
+  --neon-purple: #9333ea;
+  /* Brighter Purple */
+  --neon-pink: #db2777;
+  /* Deep Pink */
+  --neon-cyan: #06b6d4;
+  /* Cyan for accents */
+
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+
+  /* More vibrant gradients */
+  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #9333ea 50%, #db2777 100%);
+  --gradient-hover: linear-gradient(135deg, #1d4ed8 0%, #7e22ce 50%, #be185d 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.5) 100%);
+}
+
+@theme inline {
+  --color-neon-blue: var(--neon-blue);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-pink: var(--neon-pink);
+
+  --animate-fade-in-up: fadeInUp 0.5s ease-out forwards;
+  --animate-pulse-slow: pulseSlow 3s infinite;
+}
+
+@layer base {
+  body {
+    @apply bg-[#030303] text-gray-100 antialiased;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.2) 0%, transparent 60%),
+      radial-gradient(circle at 100% 0%, rgba(147, 51, 234, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(219, 39, 119, 0.15) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-zinc-900/80 backdrop-blur-2xl border border-white/10;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+  }
+
+  .glass-button {
+    @apply bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-200 active:scale-95;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400;
+  }
+
+  .input-glow:focus-within {
+    box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+    @apply border-blue-500/50;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseSlow {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.message-content strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.message-content a {
+  color: #60a5fa;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.message-content ul, .message-content ol {
+  margin-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.message-content pre {
+  background: rgba(0,0,0,0.3);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.message-content code {
+  font-family: monospace;
+  background: rgba(255,255,255,0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+}

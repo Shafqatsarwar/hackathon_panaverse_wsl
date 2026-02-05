@@ -1,0 +1,24 @@
+==================================================
+PANAVERSITY SKILL VERIFICATION TEST
+==================================================
+
+[1] Testing Web Search Skill...
+Traceback (most recent call last):
+  File "D:\Panavers\Projects\hackathon_panaverse\test_skills.py", line 18, in <module>
+    print(f"   \u2705 PASS - Got {len(results)} result(s)")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\khans\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2705' in position 3: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Panavers\Projects\hackathon_panaverse\test_skills.py", line 23, in <module>
+    print(f"   \u274c FAIL - {e}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\khans\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 3: character maps to <undefined>

@@ -1,0 +1,124 @@
+# Add Python cache and virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Gmail API credentials and tokens
+credentials.json
+credentials.json.json
+token.json
+token.pickle
+
+# Logs
+*.log
+panaversity_assistant.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MCP
+.claude/
+
+# Old project files
+# Old project files
+public/2nd_hackathon-phase1-3/
+
+# Browser Sessions (Playwright - OLD)
+whatsapp_session/
+linkedin_session/
+
+# Baileys Sessions (NEW)
+whatsapp_baileys_session/
+skills/whatsapp_baileys/sessions/
+skills/whatsapp_baileys/node_modules/
+
+# Node.js
+node_modules/
+
+# Chat History Logs
+History/chat_history/
+
+# =============================================
+# SENSITIVE FILES - NEVER COMMIT
+# =============================================
+
+# Oracle Cloud SSH Keys
+oracle/
+oracle_cloud/oracle/
+*.key
+*.pem
+*.ppk
+
+# API Keys and Tokens
+*.token
+api_keys.json
+secrets.json
+config.secrets.json
+
+# Deployment packages (contain credentials)
+*.zip
+panaverse_fully_authenticated.zip
+panaverse_full_project.zip
+
+# Debug screenshots
+whatsapp_debug.png
+debug_*.png
+*.screenshot.png
+
+# Session deploy folders
+whatsapp_session_deploy/
+linkedin_session_deploy/
+
+# Gemini/Claude artifacts
+.gemini/
+
+# Local config overrides
+config.local.py
+settings.local.py
+
+# Secrets reference (contains locations of sensitive files)
+SECRETS_REFERENCE.md
+
+# History session logs
+History/*.md

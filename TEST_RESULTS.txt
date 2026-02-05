@@ -1,0 +1,32 @@
+Test Results - 2026-02-05 00:35:41
+================================================================================
+
+Gmail:
+  [PASS] Authentication: Successfully authenticated
+  [PASS] Fetch Emails: Found 5 emails
+  [PASS] Filter Emails: Filtered to 6 relevant emails
+
+WhatsApp:
+  [FAIL] Check Messages: Failed to initialize browser or login
+  [FAIL] Check Archived: 'WhatsAppSkill' object has no attribute 'check_archived_messages'
+  [FAIL] Send Message: Failed to initialize browser or login
+
+LinkedIn:
+  [FAIL] Check Notifications: Page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.linkedin.com/messaging/", waiting until "domcontentloaded"
+
+  [PASS] Scrape Leads: Found 0 messages
+  [PASS] Response Format: Consistent format
+
+Odoo:
+  [FAIL] Initialization: OdooSkill.__init__() got an unexpected keyword argument 'url'
+
+Chatbot:
+  [PASS] Simple Query: Got response
+  [PASS] Email Tool: Tool called
+  [PASS] Web Search: Search completed
+
+
+Total: 13, Passed: 8, Failed: 5
+Success Rate: 61.5%
