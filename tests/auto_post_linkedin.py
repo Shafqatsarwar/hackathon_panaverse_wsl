@@ -13,7 +13,7 @@ LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL", "excellencelinks@gmail.com")
 LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD", "nokia3310")
 
 # Project details
-GITHUB_URL = "https://github.com/Shafqatsarwar/hackathon_panaverse"
+GITHUB_URL = "https://github.com/Shafqatsarwar/hackathon_panaverse_wsl"
 PROJECT_NAME = "Panaversity Student Assistant"
 
 # Vibrant, modern LinkedIn post

@@ -17,7 +17,7 @@ The issue: We cannot programmatically detect the 'Archived' folder button to rea
 
 We would appreciate any guidance on how to robustly access the Archived folder using Playwright in the latest WhatsApp Web UI.
 
-Repo: https://github.com/Shafqatsarwar/hackathon_panaverse.git
+Repo: https://github.com/Shafqatsarwar/hackathon_panaverse_wsl.git
 Thank you!"""
 
 async def send_via_search():

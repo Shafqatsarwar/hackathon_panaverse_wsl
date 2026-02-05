@@ -3,7 +3,7 @@ import os
 import sys
 
 def run_and_capture():
-    project_root = "/home/shafqatsarwar/Projects/hackathon_panaverse"
+    project_root = os.path.dirname(os.path.abspath(__file__))
     script_path = os.path.join(project_root, "scripts", "send_summary.py")
     
     print(f"Running {script_path}...")

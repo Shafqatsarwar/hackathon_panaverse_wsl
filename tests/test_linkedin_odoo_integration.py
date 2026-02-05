@@ -272,7 +272,7 @@ Built with:
 
 This project showcases the power of AI agents working autonomously 24/7 to handle routine tasks, allowing students to focus on learning.
 
-Check out the code on GitHub: https://github.com/Shafqatsarwar/hackathon_panaverse
+Check out the code on GitHub: https://github.com/Shafqatsarwar/hackathon_panaverse_wsl
 
 #AI #Automation #Python #GenAI #PIAIC #Panaversity #MachineLearning #SoftwareDevelopment
 

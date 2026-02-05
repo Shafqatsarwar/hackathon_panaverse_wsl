@@ -158,4 +158,61 @@ python test_all_skills.py
 This tests WhatsApp (Baileys), Gmail, Odoo, and LinkedIn.
 
 ---
+
+## ☁️ 6. Oracle Cloud Deployment Commands
+
+### 📦 Step 1: Create Deploy Package (Local)
+```bash
+# Create zip without sensitive files
+python create_deploy_package.py
+mv panaverse_full_project.zip panaverse_deploy.zip
+```
+
+### 📤 Step 2: Upload to Server
+```bash
+# Upload zip file to Oracle Cloud
+scp -i oracle/oracle_key.key panaverse_deploy.zip ubuntu@141.147.83.137:~/
+```
+
+### 🔧 Step 3: Deploy on Server
+```bash
+# SSH into server
+ssh -i oracle/oracle_key.key ubuntu@141.147.83.137
+
+# On the server - extract and deploy
+cd ~
+unzip -o panaverse_deploy.zip -d panaverse
+cd panaverse
+sudo docker-compose up --build -d
+```
+
+### 📱 Step 4: WhatsApp QR Code Scan
+```bash
+# Watch WhatsApp logs and scan QR when it appears
+sudo docker logs -f panaversity_whatsapp
+
+# Or get QR as image
+curl http://localhost:3001/api/qr | python3 -c "import sys,json; print(json.load(sys.stdin).get('qr','No QR'))"
+```
+
+### 🔍 Step 5: Monitor Logs
+```bash
+# View all container logs
+sudo docker-compose logs -f
+
+# View specific service
+sudo docker logs -f panaversity_watcher
+sudo docker logs -f panaversity_whatsapp
+```
+
+### 🔄 Quick Redeploy Commands
+```bash
+# Full redeploy from local machine (one-liner)
+python create_deploy_package.py && scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/ && ssh -i oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose down && unzip -o ~/panaverse_full_project.zip -d ~/panaverse && sudo docker-compose up --build -d"
+
+# Restart containers only (no rebuild)
+ssh -i oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose restart"
+```
+
+---
 *Maintained by Team AI Force - Platinum Tier Hackathon Project (2026)*

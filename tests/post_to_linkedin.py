@@ -7,7 +7,7 @@ import sys
 from playwright.async_api import async_playwright
 
 # Project details
-GITHUB_URL = "https://github.com/Shafqatsarwar/hackathon_panaverse"
+GITHUB_URL = "https://github.com/Shafqatsarwar/hackathon_panaverse_wsl"
 PROJECT_NAME = "Panaversity Student Assistant"
 
 # Vibrant, modern LinkedIn post

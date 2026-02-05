@@ -9,8 +9,8 @@ import os
 import requests
 from datetime import datetime
 
-# Add project root to path
-sys.path.insert(0, '/home/shafqatsarwar/Projects/hackathon_panaverse')
+# Add project root to path (use current directory)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Results storage
 test_results = {
