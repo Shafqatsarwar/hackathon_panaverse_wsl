@@ -1,24 +1,19 @@
 """
-WhatsApp Agent
+WhatsApp Agent - Using Baileys (No Browser Automation)
 """
 import logging
-from typing import Dict, Any
-from skills.whatsapp_skill.skill import WhatsAppSkill
+from typing import Dict, Any, List
+from skills.whatsapp_baileys.skill import WhatsAppBaileysSkill
 from src.utils.config import Config
 
 logger = logging.getLogger(__name__)
 
 class WhatsAppAgent:
-    """Agent for WhatsApp communication"""
+    """Agent for WhatsApp communication using Baileys microservice"""
     
     def __init__(self):
-        import os
-        from pathlib import Path
-        session_path = os.path.abspath("./whatsapp_session")
-        self.skill = WhatsAppSkill(
-            enabled=Config.WHATSAPP_ENABLED, 
-            headless=True, # Must match Watcher config to share session
-            session_dir=session_path
+        self.skill = WhatsAppBaileysSkill(
+            base_url=Config.WHATSAPP_BAILEYS_URL if hasattr(Config, 'WHATSAPP_BAILEYS_URL') else "http://localhost:3001/api"
         )
         
     def send_alert(self, message: str) -> Dict[str, Any]:
@@ -30,16 +25,32 @@ class WhatsAppAgent:
         """Send a message to any number"""
         return self.skill.send_message(to_number, message)
         
-    def get_unread_messages(self, limit: int = 5, check_archived: bool = False) -> list:
-        """Get unread messages, optionally filtered by config keywords"""
-        # User requested specific keywords: Panaversity, PIAIC, etc.
-        # We'll use the ones from Config + explicit ones if needed, 
-        # but for now rely on Config which user implied they updated/we should use.
-        keywords = Config.FILTER_KEYWORDS
-        return self.skill.check_messages(keywords=keywords, limit=limit, check_archived=check_archived)
+    def get_unread_messages(self, limit: int = 5, check_archived: bool = False) -> List[Dict]:
+        """Get recent chats"""
+        try:
+            chats = self.skill.get_chats(limit=limit)
+            return chats.get("chats", [])
+        except Exception as e:
+            logger.error(f"Error getting messages: {e}")
+            return []
 
     def get_status(self) -> Dict[str, Any]:
-        return {
-            "name": "WhatsAppAgent",
-            "enabled": self.skill.enabled
-        }
+        """Get WhatsApp connection status"""
+        try:
+            status = self.skill.get_status()
+            return {
+                "name": "WhatsAppAgent (Baileys)",
+                "connected": status.get("connected", False),
+                "enabled": True
+            }
+        except Exception as e:
+            return {
+                "name": "WhatsAppAgent (Baileys)",
+                "connected": False,
+                "enabled": True,
+                "error": str(e)
+            }
+    
+    def is_connected(self) -> bool:
+        """Check if WhatsApp is connected"""
+        return self.skill.is_connected()

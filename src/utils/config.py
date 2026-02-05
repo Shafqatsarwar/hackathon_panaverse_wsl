@@ -29,6 +29,7 @@ class Config:
     
     # Feature Flags
     WHATSAPP_ENABLED = os.getenv("WHATSAPP_ENABLED", "false").lower() == "true"
+    WHATSAPP_BAILEYS_URL = os.getenv("WHATSAPP_BAILEYS_URL", "http://localhost:3001/api")
     LINKEDIN_ENABLED = os.getenv("LINKEDIN_ENABLED", "false").lower() == "true"
     
     # LinkedIn Configuration

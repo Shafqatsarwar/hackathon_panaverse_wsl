@@ -2,9 +2,12 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# Install git (required for some npm packages)
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies first (cache layer)
-COPY package.json ./
-RUN npm install --production
+COPY package.json package-lock.json* ./
+RUN npm install --omit=dev
 
 # Copy source
 COPY src/ ./src/

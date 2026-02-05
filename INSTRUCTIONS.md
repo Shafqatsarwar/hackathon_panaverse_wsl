@@ -1,214 +1,192 @@
-# ⚙️ Comprehensive Setup Instructions
+# ⚙️ Comprehensive Setup & Deployment Instructions (WSL Edition)
 
-This document details how to set up the **Panaversity AI Employee** from scratch, covering Credentials, Cloud Variables, Installation, and Oracle Cloud Deployment.
+This document details the complete deployment process for the **Panaversity AI Employee** from WSL Ubuntu to Oracle Cloud.
 
-## 1. Prerequisites
-- **OS**: Windows 10/11 (WSL2) or Linux Ubuntu 22.04
-- **Python**: 3.12+ (Recommended: 3.12.1)
+---
+
+## 📋 Prerequisites
+- **OS**: Ubuntu 22.04 (WSL2 on Windows)
+- **Python**: 3.12+ (use `python3`)
 - **Node.js**: v20 LTS
-- **Odoo**: Community v17+ (Optional, can accept mock)
-- **Git**: Latest version
-
-## 2. Installation (Step-by-Step)
-
-### A. Clone & Prepare
-```bash
-git clone https://github.com/Shafqatsarwar/hackathon_penaverse_wsl-oracle-deploy.git
-cd hackathon_penaverse_wsl-oracle-deploy
-
-# Create Virtual Environment
-python -m venv .venv
-source .venv/bin/activate  # Linux/WSL
-# .\.venv\Scripts\activate   # Windows PowerShell
-```
-
-### B. Install Dependencies
-```bash
-# Python
-pip install -r requirements.txt
-playwright install chromium  # For LinkedIn only
-
-# Node.js (WhatsApp Baileys)
-cd skills/whatsapp_baileys
-npm install
-cd ../..
-
-# Node.js (Frontend)
-cd frontend
-npm install
-cd ..
-```
+- **Oracle Cloud**: Free tier instance running Ubuntu
+- **SSH Key**: `oracle/oracle_key.key` for server access
 
 ---
 
-## 3. Configuration & Credentials 🔐
+## 🚀 DEPLOYMENT STEPS (Step-by-Step)
 
-### A. Google Cloud (Gmail API)
-To allow the AI to check emails (`watchers.py` runs every 60s), you need `credentials.json`.
-1. **Create Project**: Go to [Google Cloud Console](https://console.cloud.google.com/).
-2. **Enable APIs**: Search for and enable **Gmail API**.
-3. **Configure Consent Screen**:
-   - Go to "OAuth consent screen".
-   - Select **External** (for personal testing) or Internal.
-   - Add Test Users: Add your email.
-4. **Create Credentials**:
-   - Go to "Credentials" > "Create Credentials" > "OAuth client ID".
-   - Application Type: **Desktop app**.
-   - Name: "Panaversity Assistant".
-   - Click **Create**.
-5. **Download JSON**:
-   - Click the **Download (⬇️)** button next to your new Client ID.
-   - Save the file as **`credentials.json`** in the project root folder.
-
-### B. Environment Variables (.env)
-Create a `.env` file in the root. **Do NOT commit this file.**
-
-```ini
-# --- Core AI ---
-GOOGLE_API_KEY="AIzaSy... (Your Gemini API Key)"
-
-# --- Gmail settings ---
-GMAIL_CREDENTIALS_PATH="credentials.json"
-GMAIL_TOKEN_PATH="token.json"  # Automatically created on first login
-ADMIN_EMAIL="your_email@mail.com"
-
-# --- SMTP for sending emails ---
-SMTP_SERVER="smtp.gmail.com"
-SMTP_PORT=587
-SMTP_USERNAME="your_email@gmail.com"
-SMTP_PASSWORD="your_app_password"
-
-# --- Odoo CRM (Optional) ---
-ODOO_URL="http://localhost:8069" # Or your Cloud IP
-ODOO_DB="panaverse_db"
-ODOO_USER="admin"
-ODOO_PASSWORD="admin_password"
-
-# --- WhatsApp (Baileys - NEW) ---
-WHATSAPP_ENABLED="True"
-WHATSAPP_BAILEYS_URL="http://localhost:3001/api"
-ADMIN_WHATSAPP="+923244279017"
+### Step 1: Navigate to Project
+```bash
+cd /home/shafqatsarwar/Projects/hackathon_panaverse_wsl
 ```
 
----
-
-## 4. Running the System
-
-### Option 1: Docker (Recommended for Oracle Cloud)
+### Step 2: Activate Virtual Environment
 ```bash
-# Build and start all services
-docker-compose up --build -d
-
-# View WhatsApp logs (scan QR code)
-docker logs -f panaversity_whatsapp
-
-# View main watcher logs
-docker logs -f panaversity_watcher
-```
-
-### Option 2: Manual / Terminal
-```bash
-# 1. Start WhatsApp Baileys Service (separate terminal)
-cd skills/whatsapp_baileys && npm start
-
-# 2. Start Main Watcher (separate terminal)
 source .venv/bin/activate
-python watchers.py
 ```
 
-### ⚠️ Emergency Kill (If stuck)
-If processes hang:
+### Step 3: Create Deploy Package
 ```bash
-# Linux/WSL
-pkill -f node
-pkill -f python
-
-# Windows
-taskkill /F /IM python.exe /T & taskkill /F /IM node.exe /T
+python3 create_deploy_package.py
+```
+**Expected Output:**
+```
+📦 Compressing project into: panaverse_full_project.zip...
+  Adding: Dockerfile
+  Adding: docker-compose.yml
+  ...
+✅ SUCCESS: panaverse_full_project.zip is ready!
 ```
 
----
-
-## 5. Oracle Cloud Deployment Guide ☁️
-
-### Step 1: Create Instance
-1. Sign up for Oracle Cloud Free Tier.
-2. Create **Compute Instance**:
-   - **Image**: Canonical Ubuntu 22.04
-   - **Shape**: VM.Standard.E2.1.Micro (Always Free)
-   - **SSH Keys**: "Generate a key pair for me" -> **Save Private Key** (e.g., `oracle_key.key`).
-
-### Step 2: Networking (Crucial Fix)
-If your instance says "Public IP: No" or you can't connect:
-1. Go to **Instance Details** > **Attached VNICs** (left menu).
-2. Click the VNIC Name.
-3. Scroll to **IPv4 Addresses**.
-4. Click **... (Actions)** > **Edit**.
-5. Change "Public IP Type" to **Ephemeral Public IP**.
-6. Click **Update**.
-7. Copy the new IP Address (e.g., `141.147.x.x`).
-
-### Step 3: Fast Deployment
+### Step 4: Upload to Oracle Cloud
 ```bash
-# 1. Create deploy package (excludes sensitive files)
-python create_deploy_package.py
-mv panaverse_full_project.zip panaverse_deploy.zip
+scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/
+```
+**Expected Output:**
+```
+panaverse_full_project.zip    100%  XXX MB   X.X MB/s   00:XX
+```
 
-# 2. Upload to server
-scp -i oracle/oracle_key.key panaverse_deploy.zip ubuntu@YOUR_IP:~/
+### Step 5: SSH into Oracle Cloud Server
+```bash
+ssh -i oracle/oracle_key.key ubuntu@141.147.83.137
+```
 
-# 3. SSH and deploy
-ssh -i oracle/oracle_key.key ubuntu@YOUR_IP
-
-# On the server:
+### Step 6: Extract and Deploy (On Server)
+```bash
 cd ~
-unzip -o panaverse_deploy.zip -d panaverse
+rm -rf panaverse 2>/dev/null
+unzip -o panaverse_full_project.zip -d panaverse
 cd panaverse
-sudo docker-compose up --build -d
+```
 
-# 4. Watch WhatsApp logs and scan QR
+### Step 7: Stop Old Containers (On Server)
+```bash
+sudo docker-compose down
+```
+
+### Step 8: Build and Start Services (On Server)
+```bash
+sudo docker-compose up --build -d
+```
+**Expected Output:**
+```
+Building whatsapp...
+Building watcher...
+Creating panaversity_whatsapp ... done
+Creating panaversity_watcher  ... done
+```
+
+### Step 9: Scan WhatsApp QR Code (On Server)
+```bash
 sudo docker logs -f panaversity_whatsapp
 ```
+Wait for QR code to appear, then scan with WhatsApp mobile app.
 
----
-
-## 6. How it Works (The logic)
-
-### Services
-| Service | Port | Technology | Purpose |
-|---------|------|------------|---------|
-| WhatsApp Baileys | 3001 | Node.js | WhatsApp via WebSocket (no browser!) |
-| Main Watcher | - | Python | Monitors Gmail, processes tasks |
-| Frontend | 3000 | Next.js | Admin dashboard |
-| Backend API | 8000 | FastAPI | REST API |
-
-### Data Flow
-1. **Watchers**: Monitor Gmail/WhatsApp every 60 seconds
-2. **Brain**: Analyzes inputs and routes to skills
-3. **Skills**: Execute actions (send message, create lead, etc.)
-
----
-
-## 7. Skill Reference
-
-| Skill | Location | Description |
-|-------|----------|-------------|
-| WhatsApp (Baileys) | `skills/whatsapp_baileys/` | Send/receive WhatsApp (Node.js) |
-| WhatsApp Python Bridge | `skills/whatsapp_baileys/skill.py` | Python interface to Baileys |
-| Gmail Monitoring | `skills/gmail_monitoring/` | Check unread emails |
-| Email Notifications | `skills/email_notifications/` | Send SMTP emails |
-| LinkedIn | `skills/linkedin_skill/` | Scrape notifications (Playwright) |
-| Odoo CRM | `skills/odoo_skill/` | Create/read leads |
-
----
-
-## 8. Testing
-Run comprehensive test of all skills:
+### Step 10: Verify Services Running (On Server)
 ```bash
-python test_all_skills.py
+sudo docker ps
+```
+**Expected Output:**
+```
+CONTAINER ID   IMAGE                   STATUS          NAMES
+abc123...      panaverse_whatsapp      Up 2 minutes    panaversity_whatsapp
+def456...      panaverse_watcher       Up 2 minutes    panaversity_watcher
 ```
 
-This will test WhatsApp, Gmail, Odoo, LinkedIn and send you an email summary.
+### Step 11: Exit SSH
+```bash
+exit
+```
 
 ---
+
+## 🔧 TROUBLESHOOTING
+
+### ❌ Error: `python` command not found
+**Solution:** Use `python3` instead of `python`:
+```bash
+python3 create_deploy_package.py
+```
+
+### ❌ Error: Permission denied (SSH key)
+**Solution:** Fix key permissions:
+```bash
+chmod 600 oracle/oracle_key.key
+```
+
+### ❌ Error: Connection refused (SSH)
+**Solution:** Check if Oracle Cloud instance is running and has public IP.
+
+### ❌ Error: Port 22 connection timeout
+**Solution:** Check Oracle Cloud Security Lists:
+1. Go to Oracle Cloud Console → Networking → Virtual Cloud Networks
+2. Click your VCN → Security Lists → Default Security List
+3. Add Ingress Rule: Source 0.0.0.0/0, Port 22, TCP
+
+### ❌ Error: Docker compose not found
+**Solution:** Install Docker Compose on server:
+```bash
+sudo apt update
+sudo apt install docker-compose -y
+```
+
+### ❌ Error: WhatsApp not connecting
+**Solution:**
+1. Check container logs: `sudo docker logs panaversity_whatsapp`
+2. Delete old session and restart:
+```bash
+sudo docker-compose down
+sudo rm -rf whatsapp_baileys_session/*
+sudo docker-compose up --build -d
+sudo docker logs -f panaversity_whatsapp
+```
+3. Scan new QR code
+
+### ❌ Error: Container keeps restarting
+**Solution:** Check logs for specific error:
+```bash
+sudo docker logs panaversity_watcher --tail 100
+sudo docker logs panaversity_whatsapp --tail 100
+```
+
+### ❌ Error: Package not found during build
+**Solution:** Make sure requirements.txt is present:
+```bash
+cat requirements.txt
+```
+
+---
+
+## 📱 QUICK COMMANDS REFERENCE
+
+### Local (WSL)
+| Action | Command |
+|--------|---------|
+| Activate venv | `source .venv/bin/activate` |
+| Create package | `python3 create_deploy_package.py` |
+| Upload to server | `scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/` |
+| SSH to server | `ssh -i oracle/oracle_key.key ubuntu@141.147.83.137` |
+
+### Server (Oracle Cloud)
+| Action | Command |
+|--------|---------|
+| Deploy | `cd ~/panaverse && sudo docker-compose up --build -d` |
+| View logs | `sudo docker-compose logs -f` |
+| WhatsApp logs | `sudo docker logs -f panaversity_whatsapp` |
+| Restart services | `sudo docker-compose restart` |
+| Stop all | `sudo docker-compose down` |
+| Check status | `sudo docker ps` |
+
+---
+
+## 🔄 QUICK REDEPLOY (One-Liner)
+
+From WSL terminal:
+```bash
+cd /home/shafqatsarwar/Projects/hackathon_panaverse_wsl && source .venv/bin/activate && python3 create_deploy_package.py && scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/ && ssh -i oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose down && cd ~ && unzip -o panaverse_full_project.zip -d panaverse && cd panaverse && sudo docker-compose up --build -d"
+```
+
+---
+
 *Panaversity AI Employee - WSL Oracle Deploy Edition (2026)*

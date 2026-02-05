@@ -45,19 +45,15 @@ class WatcherSystem:
         except Exception as e:
             logger.error(f"Email Watcher failed to init: {e}")
             
-        # Initialize WhatsApp Skill
-        # Initialize WhatsApp Skill
+        # Initialize WhatsApp Skill (Baileys - No Browser!)
         self.whatsapp_enabled = self.config.WHATSAPP_ENABLED
+        self.whatsapp_skill = None
         if self.whatsapp_enabled:
-            from skills.whatsapp_skill.skill import WhatsAppSkill
-            session_path = "./whatsapp_session" # Use relative to root, same as verify script
-            logger.info(f"WhatsApp Session Path: {os.path.abspath(session_path)}")
-            
-            self.whatsapp_skill = WhatsAppSkill(
-                enabled=True,
-                headless=True, 
-                session_dir=session_path
+            from skills.whatsapp_baileys.skill import WhatsAppBaileysSkill
+            self.whatsapp_skill = WhatsAppBaileysSkill(
+                base_url=self.config.WHATSAPP_BAILEYS_URL
             )
+            logger.info(f"WhatsApp Baileys initialized: {self.config.WHATSAPP_BAILEYS_URL}")
 
     def run(self):
         logger.info("Starting Watcher System...")
@@ -133,49 +129,57 @@ subject: {email.get('subject')}
         pass
 
     def check_whatsapp(self):
-        """Check for new relevant WhatsApp messages"""
-        logger.info("Checking WhatsApp...")
+        """Check WhatsApp connection status using Baileys"""
+        logger.info("Checking WhatsApp (Baileys)...")
         try:
-            # Check for specific keywords
-            result = self.whatsapp_skill.check_messages(
-                keywords=self.config.FILTER_KEYWORDS,
-                check_archived=True,
-                limit=10
-            )
-            
-            if result.get("success") and result.get("messages"):
-                messages = result["messages"]
-                logger.info(f"Found {len(messages)} relevant WhatsApp messages.")
+            if not self.whatsapp_skill:
+                logger.warning("WhatsApp skill not initialized")
+                return
                 
-                for msg in messages:
-                    # Create unique ID based on timestamp and title
-                    msg_id = f"{msg.get('title')}_{int(datetime.now().timestamp())}"
-                    safe_id = "".join([c for c in msg_id if c.isalnum() or c in "_-"])
+            # Check connection status
+            status = self.whatsapp_skill.get_status()
+            if status.get("connected"):
+                logger.info("✅ WhatsApp Baileys connected")
+                
+                # Get recent chats
+                chats = self.whatsapp_skill.get_chats(limit=10)
+                chat_list = chats.get("chats", [])
+                
+                if chat_list:
+                    logger.info(f"Found {len(chat_list)} recent chats")
                     
-                    file_name = f"WHATSAPP_{safe_id}.md"
-                    file_path = self.needs_action_path / file_name
-                    
-                    content = f"""---
+                    # Filter for keywords
+                    keywords = [k.lower() for k in self.config.FILTER_KEYWORDS]
+                    for chat in chat_list:
+                        chat_name = chat.get("name", "").lower()
+                        # Check if chat name contains any keyword
+                        matched = any(kw in chat_name for kw in keywords)
+                        
+                        if matched:
+                            msg_id = f"{chat.get('name', 'unknown')}_{int(datetime.now().timestamp())}"
+                            safe_id = "".join([c for c in msg_id if c.isalnum() or c in "_-"])
+                            
+                            file_name = f"WHATSAPP_{safe_id}.md"
+                            file_path = self.needs_action_path / file_name
+                            
+                            content = f"""---
 type: whatsapp
-source: whatsapp_web
+source: baileys
 status: pending
 timestamp: {datetime.now().isoformat()}
-sender: {msg.get('title')}
-matched_keyword: {msg.get('matched_keyword', 'manual')}
+sender: {chat.get('name')}
 ---
 
-# Message Snippet
-{msg.get('last_message')}
-
-# Details
-Title: {msg.get('title')}
-Unread Count: {msg.get('unread')}
-Source: {msg.get('source', 'main_list')}
+# WhatsApp Chat
+Name: {chat.get('name')}
+ID: {chat.get('id')}
 """
-                    if not file_path.exists():
-                        with open(file_path, "w", encoding="utf-8") as f:
-                            f.write(content)
-                        logger.info(f"Created WhatsApp task: {file_name}")
+                            if not file_path.exists():
+                                with open(file_path, "w", encoding="utf-8") as f:
+                                    f.write(content)
+                                logger.info(f"Created WhatsApp task: {file_name}")
+            else:
+                logger.warning("⚠️ WhatsApp not connected - check QR code")
                         
         except Exception as e:
             logger.error(f"WhatsApp check failed: {e}")
