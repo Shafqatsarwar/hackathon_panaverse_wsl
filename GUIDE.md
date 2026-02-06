@@ -50,8 +50,42 @@ To zip and deploy the latest code to your server:
 ```bash
 python create_deploy_package.py
 scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@YOUR_IP:~/
+# (scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/)
 ssh -i oracle/oracle_key.key ubuntu@YOUR_IP "cd ~/panaverse && sudo docker-compose up --build -d"
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP> "cd <DEPLOY_DIR> && sudo docker-compose up --build -d")
 ```
+## 📅 11. Daily Health Check Routine
+
+Run these commands daily to ensure your agent is healthy:
+
+```bash
+# 1. SSH into server
+ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
+
+# 2. Check containers
+sudo docker ps
+
+# 3. Check WhatsApp
+curl -s http://localhost:3001/api/status
+
+# 4. Check recent watcher activity
+sudo docker logs --since 1h panaversity_watcher | head -50
+
+# 5. Exit
+exit
+```
+
+---
+
+## 🔄 12. Quick Redeploy (One-Liner)
+
+From local WSL terminal:
+```bash
+cd /home/shafqatsarwar/Projects/hackathon_panaverse_wsl && source .venv/bin/activate && python3 create_deploy_package.py && scp -i oracle_cloud/oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/ && ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose down && cd ~ && unzip -o panaverse_full_project.zip -d panaverse && cd panaverse && sudo docker-compose up --build -d && sudo docker logs -f panaversity_whatsapp"
+# (cd <LOCAL_DIR> && source <VENV_ACTIVATE> && python3 create_deploy_package.py && scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/ && ssh -i <KEY_PATH> <USER>@<SERVER_IP> "cd <DEPLOY_DIR> && sudo docker-compose down && cd ~ && unzip -o <ZIP_NAME> -d <DEPLOY_DIR> && cd <DEPLOY_DIR> && sudo docker-compose up --build -d && sudo docker logs -f <CONTAINER_NAME>")
+```
+
 
 ## 🏗️ 2. System Architecture
 The AI Employee follows a **Local-First, Watcher-Brain-Vault** architecture.
@@ -170,11 +204,13 @@ python3 create_deploy_package.py
 ### 📤 Step 2: Upload to Server
 ```bash
 scp -i oracle_cloud/oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/
+# (scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/)
 ```
 
 ### 🔧 Step 3: Deploy on Server
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 cd ~
 unzip -o panaverse_full_project.zip -d panaverse
 cd panaverse
@@ -212,6 +248,7 @@ Your AI Employee is now running automatically and will:
 ### SSH into Server First:
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 ```
 
 ### Check All Containers Running:
@@ -289,6 +326,7 @@ When WhatsApp session expires or signs out, follow these steps:
 #### Step 1: SSH into Server (from local WSL)
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 ```
 
 #### Step 2: Check Current WhatsApp Status
@@ -344,6 +382,7 @@ exit
 SSH and restart in one command:
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose stop whatsapp && sudo rm -rf whatsapp_baileys_session/* && sudo docker-compose start whatsapp && sudo docker logs -f panaversity_whatsapp"
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP> "cd <DEPLOY_DIR> && sudo docker-compose stop whatsapp && sudo rm -rf <SESSION_DIR> && sudo docker-compose start whatsapp && sudo docker logs -f <CONTAINER_NAME>")
 ```
 Then scan QR when it appears.
 
@@ -426,11 +465,13 @@ Save: `Ctrl+O`, Enter, `Ctrl+X`
 ```bash
 python3 create_deploy_package.py
 scp -i oracle_cloud/oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/
+# (scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/)
 ```
 
 #### Step 4: Update on Server
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 cd ~
 unzip -o panaverse_full_project.zip -d panaverse
 cd panaverse
@@ -452,6 +493,7 @@ If you just need to update the key on the server without redeploying:
 
 ```bash
 ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 cd ~/panaverse
 nano .env
 # Update GOOGLE_API_KEY and GEMINI_API_KEY
@@ -465,35 +507,6 @@ sudo docker logs -f panaversity_watcher
 
 ---
 
-## 📅 11. Daily Health Check Routine
-
-Run these commands daily to ensure your agent is healthy:
-
-```bash
-# 1. SSH into server
-ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137
-
-# 2. Check containers
-sudo docker ps
-
-# 3. Check WhatsApp
-curl -s http://localhost:3001/api/status
-
-# 4. Check recent watcher activity
-sudo docker logs --since 1h panaversity_watcher | head -50
-
-# 5. Exit
-exit
-```
-
----
-
-## 🔄 12. Quick Redeploy (One-Liner)
-
-From local WSL terminal:
-```bash
-cd /home/shafqatsarwar/Projects/hackathon_panaverse_wsl && source .venv/bin/activate && python3 create_deploy_package.py && scp -i oracle_cloud/oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/ && ssh -i oracle_cloud/oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose down && cd ~ && unzip -o panaverse_full_project.zip -d panaverse && cd panaverse && sudo docker-compose up --build -d && sudo docker logs -f panaversity_whatsapp"
-```
 
 ---
 *Panaversity AI Employee - Running 24/7 on Oracle Cloud (2026)*

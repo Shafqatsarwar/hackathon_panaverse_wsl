@@ -41,6 +41,7 @@ python3 create_deploy_package.py
 ### Step 4: Upload to Oracle Cloud
 ```bash
 scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/
+# (scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/)
 ```
 **Expected Output:**
 ```
@@ -50,6 +51,7 @@ panaverse_full_project.zip    100%  XXX MB   X.X MB/s   00:XX
 ### Step 5: SSH into Oracle Cloud Server
 ```bash
 ssh -i oracle/oracle_key.key ubuntu@141.147.83.137
+# (ssh -i <KEY_PATH> <USER>@<SERVER_IP>)
 ```
 
 ### Step 6: Extract and Deploy (On Server)
@@ -165,8 +167,8 @@ cat requirements.txt
 |--------|---------|
 | Activate venv | `source .venv/bin/activate` |
 | Create package | `python3 create_deploy_package.py` |
-| Upload to server | `scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/` |
-| SSH to server | `ssh -i oracle/oracle_key.key ubuntu@141.147.83.137` |
+| Upload to server | `scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/`<br>(Suggestion: `scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/`) |
+| SSH to server | `ssh -i oracle/oracle_key.key ubuntu@141.147.83.137`<br>(Suggestion: `ssh -i <KEY_PATH> <USER>@<SERVER_IP>`) |
 
 ### Server (Oracle Cloud)
 | Action | Command |
@@ -185,6 +187,7 @@ cat requirements.txt
 From WSL terminal:
 ```bash
 cd /home/shafqatsarwar/Projects/hackathon_panaverse_wsl && source .venv/bin/activate && python3 create_deploy_package.py && scp -i oracle/oracle_key.key panaverse_full_project.zip ubuntu@141.147.83.137:~/ && ssh -i oracle/oracle_key.key ubuntu@141.147.83.137 "cd ~/panaverse && sudo docker-compose down && cd ~ && unzip -o panaverse_full_project.zip -d panaverse && cd panaverse && sudo docker-compose up --build -d"
+# (cd <PROJECT_DIR> && source <VENV_ACTIVATE> && python3 create_deploy_package.py && scp -i <KEY_PATH> <ZIP_NAME> <USER>@<SERVER_IP>:~/ && ssh -i <KEY_PATH> <USER>@<SERVER_IP> "cd <DEPLOY_DIR> && sudo docker-compose down && cd ~ && unzip -o <ZIP_NAME> -d <DEPLOY_DIR> && cd <DEPLOY_DIR> && sudo docker-compose up --build -d")
 ```
 
 ---
